@@ -5,7 +5,7 @@
 /**
  * Sends async GET request to the given URL.
  *
- * @param integer $request - URL to send request to.
+ * @param String $request - URL to send request to.
  */ 
 function asyncGetRequest($request){
     exec('bash -c "wget -O '.$request.' > /dev/null 2>&1 &"');
@@ -48,21 +48,23 @@ function createPDOConnection($user, $password, $dbname, $host = 'localhost', $ch
     return new PDO($dsn, $user, $password, $options);
 }
 
-function colorLog($str, $type = 'i'){
+function colorLog($str, $type = 'p'){
     $time = date ('d.m H:i',time());
     switch ($type) {
         case 'e': //error
-            echo $time."\033[31m$str \033[0m\n";
+            echo $time." \033[31m$str \033[0m\n";
         break;
         case 's': //success
-            echo $time."\033[32m$str \033[0m\n";
+            echo $time." \033[32m$str \033[0m\n";
         break;
         case 'w': //warning
-            echo $time."\033[33m$str \033[0m\n";
+            echo $time." \033[33m$str \033[0m\n";
         break;  
         case 'i': //info
-            echo $time."\033[36m$str \033[0m\n";
-        break;      
+            echo $time." \033[36m$str \033[0m\n";
+        break;     
+        case 'p': //plain
+            echo $time." $str\n"; 
         default:
         # code...
         break;
@@ -73,10 +75,14 @@ function colorLog($str, $type = 'i'){
  * Write $message to log.txt file.
  * @param String $message message to write.
  */ 
-function writeToLog($message){
+function writeToLog($message, $tag = '', $filename = 'log.txt'){
     $time = date ('d.m H:i',time());
-    $log = fopen('log.txt', 'a');
-    fwrite($log, $time." ".$message."\n");
+    $log = fopen($filename, 'a');
+    if($tag != ''){
+        fwrite($log, $time." [".$tag."] ".$message."\n");
+    } else {
+        fwrite($log, $time." ".$message."\n");
+    }
     fclose($log);
 }
 
@@ -87,6 +93,16 @@ function enableErrorReporting(){
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
+}
+
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    return $randomString;
 }
 
 ?>
